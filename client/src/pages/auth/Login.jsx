@@ -1,7 +1,10 @@
 import CommonForm from '@/components/common/form'
 import { loginFormControl } from '@/config'
+import { loginUser } from '@/store/auth-slice/authSlice'
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { toast } from 'sonner'
 
 const initialState = {
   email : '',
@@ -11,9 +14,20 @@ const initialState = {
 const Login = () => {
 
   const [formData,setFormData] = useState(initialState)
+  const dispatch = useDispatch()
 
-  function onSubmit () {
-    console.log('submit !!')
+  function onSubmit (e) {
+    e.preventDefault();
+    dispatch(loginUser(formData)).then((data)=>{
+      if(data?.payload?.success){
+        toast(data?.payload?.message)
+
+      }else{
+        toast(data?.payload?.message)
+      }
+    })
+    
+    console.log(formData)
   }
 
   return (

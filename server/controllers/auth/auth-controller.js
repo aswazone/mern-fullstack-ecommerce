@@ -10,6 +10,9 @@ export const registerUser = async (req, res) =>{
     const {userName, email , password} = req.body;
     console.log(req.body)
     try {
+
+        const checkUser = await User.findOne({email})
+        if(checkUser) return res.json({ success: false, message: 'User already exist with same Email !!'})
         
         const hashPassword = await bcrypt.hash(password, 10); 
         const newUser = new User({
@@ -27,9 +30,34 @@ export const registerUser = async (req, res) =>{
 } 
 
 //login
-const login = async (req, res)=>{
+export const loginUser = async (req, res)=>{
     try {
+        const {email, password} = req.body
+        const checkUser = await User.findOne({email})
+        if(!checkUser) return res.json({ success: false, message: "User doesn't exist !!"})
         
+        const isMatch = await bcrypt.compare(password, checkUser.password)
+        if(!isMatch) return res.json({ success: false, message: 'Incorrect Password ! Please try again'})
+
+        //create token for 60 min
+        const token = jwt.sign({
+            id : checkUser._id,
+            role : checkUser.role,
+            email : checkUser.email
+        },'CLIENT_SECRET_KEY',{ expiresIn : '60m'})
+
+        //extra Aswin kp
+        const name = (checkUser.userName).charAt(0).toUpperCase() + (checkUser.userName).slice(1).toLowerCase();
+
+        res.cookie('token', token, {httpOnly: true , secure : false}).json({ 
+            success: true, 
+            message: `Welcome ${name}`,
+            user: {
+                id : checkUser._id,
+                role : checkUser.role,
+                email : checkUser.email
+            }})
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Internal Server Error !! -register'})
