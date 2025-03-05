@@ -3,10 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 import connectDB from './config/db.js';
 import dotenv from 'dotenv';
-
-// mongoose.connect('mongodb+srv://aswamanu143:123@aswA@cluster0.sche8.mongodb.net/')
-//     .then(()=> console.log('MongoDB connected !!'))
-//     .catch((err) => console.error(err))
+import authRouter from './routes/auth/auth-routes.js'
 
 dotenv.config()
 const app = express();  
@@ -28,6 +25,7 @@ app.use(cors({
 
 app.use(cookieParser());
 app.use(express.json());
+app.use('/api/auth', authRouter)
 
 
 const PORT = process.env.PORT || 5000;
