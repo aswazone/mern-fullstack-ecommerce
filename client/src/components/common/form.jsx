@@ -7,12 +7,12 @@ import { Button } from '../ui/button';
 const CommonForm = ({formControls ,formData, setFormData , onSubmit ,buttonText}) => {
 
     function renderInputsByComponentType (getControlItem){
-        console.log('form',getControlItem)
+        // console.log('form',getControlItem)
 
         let element = null;
         const value = formData[getControlItem.name] || '';
 
-        console.log(value , getControlItem.componentType)
+        // console.log(value , getControlItem.componentType)
 
         switch (getControlItem.componentType) {
             case 'input' :

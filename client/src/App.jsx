@@ -15,7 +15,10 @@ import ShoppingAccount from "./pages/shopping-view/Account"
 import ShoppingCheckout from "./pages/shopping-view/Checkout"
 import CheckAuth from "./components/common/check-auth"
 import UnAuthPage from "./pages/unauth-page/UnAuthPage"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react"
+import { checkAuth } from "./store/auth-slice/authSlice"
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 function App() {
@@ -23,7 +26,17 @@ function App() {
   // const isAuthenticated = false;
   // const user = null; //instead of hard code
 
-  const {isAuthenticated, user} = useSelector(state => state.auth)
+  const {isAuthenticated, user, isLoading } = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+  
+  useEffect(()=>{
+    dispatch(checkAuth()) //always check user is Authenticated !
+  },[dispatch])
+
+  if(isLoading) return <Skeleton className="w-full h-[600px] bg-black" />
+
+
+  console.log(isAuthenticated, isLoading ,user,'---App.jsx')
 
   return (
    <div className="flex flex-col overflow-hidden bg-white">

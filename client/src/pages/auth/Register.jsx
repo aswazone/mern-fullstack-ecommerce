@@ -29,7 +29,7 @@ const Register = () => {
         toast(data?.payload?.message);
       }
     })
-    console.log(formData)
+    // console.log(formData)
   }
 
   return (

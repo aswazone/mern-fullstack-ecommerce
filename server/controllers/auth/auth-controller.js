@@ -60,17 +60,33 @@ export const loginUser = async (req, res)=>{
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Internal Server Error !! -register'})
+        res.status(500).json({ success: false, message: 'Internal Server Error !! -login'})
     }
 }
 
-
-
-
 //logout
+export const logoutUser = async (req, res) =>{
+    res.clearCookie('token').json({
+        success : true,
+        message : 'Logout Successfully !!'
+    })
+}
 
+//auth middleware (pazhaya middleware concept- check cheyyum aal indo nn !)
+export const authMiddleware = async (req, res, next) =>{
+    const token = req.cookies.token; //getting token from cokkies
 
+    if(!token) return res.status(401).json({
+        success : false,
+        message : 'Unauthorized user !'
+    })
 
-
-
-//auth middleware
+    try {
+        const decodedToken = jwt.verify(token, 'CLIENT_SECRET_KEY');
+        req.user = decodedToken;
+        next()
+    } catch (err) {
+        console.error(err);
+        res.status(401).json({ success: false, message: 'Internal Server Error !! -authMiddleware'})
+    }
+}
