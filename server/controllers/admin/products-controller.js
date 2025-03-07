@@ -1,4 +1,5 @@
 import { imageUploadUtils } from "../../config/cloudinary.js";
+import Product from "../../models/productModel.js";
 
 
 export const handleImageUpload = async (req,res) =>{
@@ -17,5 +18,86 @@ export const handleImageUpload = async (req,res) =>{
     } catch (err) {
         console.log(err);
         res.status(500).json({success: false , message: 'Internal Server Error !! -handleImageUpload'})
+    }
+}
+
+// add a new products
+export const addProduct = async (req, res) =>{
+    try {
+
+        const { image, title, description, category, brand, price, salePrice, totalStock } = req.body;
+
+        const newlyCreatedProduct = new Product({ 
+            image, 
+            title, 
+            description, 
+            category, 
+            brand, 
+            price, 
+            salePrice, 
+            totalStock 
+        })
+
+        await newlyCreatedProduct.save()
+        return res.status(200).json({ success : true , data : newlyCreatedProduct })
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({success: false , message: 'Internal Server Error !! -addProduct'})
+    }
+}
+// fetch all products
+export const fetchAllProducts = async (req, res) =>{
+    try {
+        const listOfProducts = await Product.find({});
+        return res.status(200).json({ success : true , data : listOfProducts })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({success: false , message: 'Internal Server Error !! -fetchAllProducts'})
+    }
+}
+// edit a product
+export const editProduct = async (req, res) =>{
+    try {
+
+        const {id} = req.params;
+        const { image, title, description, category, brand, price, salePrice, totalStock } = req.body;
+        
+        const findProduct = await Product.findById(id);
+        
+        if(!findProduct) return res.status(404).json({success: false , message: 'Product not found !!'});
+
+        findProduct.title = title || findProduct.title
+        findProduct.description = description || findProduct.description
+        findProduct.category = category || findProduct.category
+        findProduct.brand = brand || findProduct.brand
+        findProduct.price = price || findProduct.price
+        findProduct.salePrice = salePrice || findProduct.salePrice
+        findProduct.totalStock = totalStock || findProduct.totalStock
+        findProduct.image = image || findProduct.image
+
+        await findProduct.save();
+
+        return res.status(200).json({ success : true , data : findProduct })
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({success: false , message: 'Internal Server Error !! -editProduct'})
+    }
+}
+//delete a product
+export const deleteProduct = async (req, res) =>{
+    try {
+
+        const {id} = req.params;
+
+        const product = await Product.findByIdAndDelete(id);
+
+        if(!product) return res.status(200).json({success: true , message: 'Product deleted successfully !!'});
+
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({success: false , message: 'Internal Server Error !! -deleteProduct'})
     }
 }
