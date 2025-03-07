@@ -4,6 +4,7 @@ import cors from 'cors'
 import connectDB from './config/db.js';
 import dotenv from 'dotenv';
 import authRouter from './routes/auth/auth-routes.js'
+import adminProductsRouter from './routes/admin/products-routes.js'
 
 dotenv.config()
 const app = express();  
@@ -26,6 +27,7 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use('/api/auth', authRouter)
+app.use('/api/admin/products', adminProductsRouter)
 
 
 const PORT = process.env.PORT || 5000;

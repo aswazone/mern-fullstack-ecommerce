@@ -1,10 +1,11 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { FileIcon, UploadCloudIcon, XIcon } from 'lucide-react';
 import { Button } from '../ui/button';
+import axios from 'axios';
 
-const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUploadedImageUrl}) => {
+const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUploadedImageUrl , setImageUploadState }) => {
 
     const inputRef = useRef(null);
 
@@ -30,6 +31,30 @@ const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUplo
         setImageFile(null);
         if(inputRef.current) inputRef.current.value = ''
     }
+
+    // console.log(imageFile);
+
+    const uploadImageToCloudinary = async () => {
+        setImageUploadState(true)
+
+        const data = new FormData();
+        data.append('my_file', imageFile);
+
+        const response = await axios.post('http://localhost:5000/api/admin/products/upload-image', data)
+        console.log(response,'res');
+
+        //data kittyal mathram
+        if(response?.data?.success) {
+            setUploadedImageUrl(response.data.url)
+            setImageUploadState(false)
+        }
+    }
+
+    //eppo photo maarunno , appo backendile cloudinaryiyil ethi, response kittum thirich
+    useEffect(()=>{
+        if(imageFile !== null) uploadImageToCloudinary(imageFile)
+    },[imageFile])
+
 
   return (
     <div className='w-full max-w-md mx-auto px-4'>
