@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 import axios from 'axios';
 import { Skeleton } from '../ui/skeleton';
 
-const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUploadedImageUrl , setImageUploadState , imageUploadState}) => {
+const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUploadedImageUrl , setImageUploadState , imageUploadState , isEditMode}) => {
 
     const inputRef = useRef(null);
 
@@ -30,6 +30,7 @@ const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUplo
     const handleRemoveImage = (e) =>{
         console.log(e)
         setImageFile(null);
+        setUploadedImageUrl(null)
         if(inputRef.current) inputRef.current.value = ''
     }
 
@@ -59,7 +60,7 @@ const ProductImageUpload = ({imageFile, setImageFile ,uploadedImageUrl , setUplo
 
   return (
     <div className='w-full max-w-md mx-auto px-4'>
-        <Label className='text-lg font-semibold mb-2 block'>Upload image</Label>
+        <Label className='text-lg font-semibold mb-2 block'>{isEditMode ? 'Replace image' : 'Upload image'}</Label>
         <div onDragOver={handleDragOver} onDrop={handleDrop} className='border-2 border-dashed rounded-lg p-4'>
             <Input id='image-upload' type='file' className='hidden' ref={inputRef} onChange={handleImageFileChange}/>
             {

@@ -29,6 +29,11 @@ export const checkAuth = createAsyncThunk('/auth/check-auth', async () => {
     return response.data
 })
 
+export const logoutUser = createAsyncThunk('/auth/logout', async ()=>{  
+    const response = await axios.post('http://localhost:5000/api/auth/logout', {},{ withCredentials : true }) //empty {} formData nte aan tto... marakkarudhh kodukkan. if didn't give that , still token not get cleared !!
+    console.log(response)
+    return response.data;
+})
 
 const authSlice = createSlice({
     name: 'auth',
@@ -77,6 +82,11 @@ const authSlice = createSlice({
         .addCase(checkAuth.rejected, (state,action)=> {
             state.isLoading = false;
             state.user = null;
+            state.isAuthenticated = false;
+        })
+        .addCase(logoutUser.fulfilled, (state)=> { 
+            state.isLoading = false;   // similar to loginUser.reject concept
+            state.user = null; 
             state.isAuthenticated = false;
         })
     }
