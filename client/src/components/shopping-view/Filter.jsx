@@ -24,9 +24,9 @@ const ProductFilter = ({filters , handleFilter}) => {
                                             filters && 
                                             Object.keys(filters).length > 0 &&
                                             filters[item] && 
-                                            filters[item].indexOf(option.id) > -1
+                                            filters[item].indexOf(option.label) > -1
                                         } 
-                                        onCheckedChange={()=>handleFilter(item, option.id)}
+                                        onCheckedChange={()=>handleFilter(item, option.label)}
                                     /> {option.label}</Label>)
                             }
                         </div>
