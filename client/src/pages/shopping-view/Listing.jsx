@@ -6,13 +6,54 @@ import { DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdo
 import { sortOptions } from '@/config'
 import { fetchAllFilteredProducts } from '@/store/shop/products-slice/productSlice'
 import { ArrowUpDownIcon } from 'lucide-react'
-import React, { useEffect }  from 'react'
+import React, { useEffect, useState }  from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const ShoppingListing = () => {
 
   const dispatch = useDispatch();
   const {productList} = useSelector(state => state.shopProducts)
+  const [filters,setFilters] = useState({});
+  const [sort,setSort] = useState(null);
+
+  const handleSort = (value) =>{
+    console.log(value,'radio-sortBY')
+    setSort(value)
+  }
+
+  //-----filter logic----
+  const handleFilter = ( sectionId, currentOption) =>{
+    console.log(sectionId,currentOption)
+    let copyFilters = {...filters};
+    const indexOfCurrentSection = Object.keys(copyFilters).indexOf(sectionId) //-1 tharum ingane oru section arrayil illengi
+    console.log(indexOfCurrentSection,'section-index')
+
+    if(indexOfCurrentSection === -1) {
+      copyFilters = {
+        ...copyFilters,
+        [sectionId] : [currentOption]
+      }
+    }
+    else {
+      const indexOfCurrentOption = copyFilters[sectionId].indexOf(currentOption)
+      console.log(indexOfCurrentOption);
+
+      if(indexOfCurrentOption === -1) {
+        copyFilters[sectionId].push(currentOption);
+      }else{
+        copyFilters[sectionId].splice(indexOfCurrentOption, 1)
+      }
+    }
+
+    console.log(filters)
+    setFilters(copyFilters)
+    sessionStorage.setItem('filters',JSON.stringify(copyFilters));
+  }
+
+  useEffect(()=>{
+    setSort('price-lowtohigh');
+    setFilters(JSON.parse(sessionStorage.getItem('filters')) || {})
+  },[])
 
   useEffect(()=>{
     dispatch(fetchAllFilteredProducts())
@@ -22,7 +63,7 @@ const ShoppingListing = () => {
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6'>
-      <ProductFilter />
+      <ProductFilter filters={filters} handleFilter={handleFilter} />
       <div className="bg-background w-full rounded-lg shadow-sm">
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className='text-lg font-extrabold'>All Products</h2>
@@ -36,10 +77,10 @@ const ShoppingListing = () => {
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='w-[200px]'>
-                <DropdownMenuRadioGroup>
+                <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
                   {
                     sortOptions.map((option)=>(
-                      <DropdownMenuRadioItem key={option.id}>{option.label}</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value={option.id} key={option.id}>{option.label}</DropdownMenuRadioItem>
                     ))
                   }
                 </DropdownMenuRadioGroup>
