@@ -50,3 +50,19 @@ export const getFilteredProducts = async (req,res) => {
         res.status(500).json({ success: false, message: 'Internal Server Error !! -getFilteredProducts'})
     }
 }
+
+
+export const getProductDetails = async (req,res)=>{
+    try {
+        const {id} = req.params;
+        const products = await Product.findById(id);
+
+        if(!products) return res.status(404).json({ success : false , message : 'Products not found !'})
+        
+        res.status(200).json({ success : true , data : products})
+            
+        } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Internal Server Error !! -getProductDetails'})
+    }
+}

@@ -4,19 +4,21 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@/components/ui/dropdown-menu'
 import { DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { sortOptions } from '@/config'
-import { fetchAllFilteredProducts } from '@/store/shop/products-slice/productSlice'
+import { fetchAllFilteredProducts, fetchProductDetails } from '@/store/shop/products-slice/productSlice'
 import { ArrowUpDownIcon } from 'lucide-react'
 import React, { useEffect, useState }  from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
+import ProductDetailsDialog from './Product-details'
 
 const ShoppingListing = () => {
 
   const dispatch = useDispatch();
-  const {productList} = useSelector(state => state.shopProducts)
+  const {productList , productDetails} = useSelector(state => state.shopProducts)
   const [filters,setFilters] = useState({});
   const [sort,setSort] = useState(null);
   const [searchParams , setSearchParams] = useSearchParams();
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
 
   const handleSort = (value) =>{
@@ -72,6 +74,16 @@ const ShoppingListing = () => {
   }
 
 
+  //--- get one product Detail ---
+
+  const handleGetProductDetails = (productId) => {
+    console.log(productId);
+    dispatch(fetchProductDetails(productId))
+      .then((data)=> {
+        console.log(data,'data')
+      })
+  }
+
 
   //---- setting URL params ----
   useEffect(()=>{
@@ -94,7 +106,14 @@ const ShoppingListing = () => {
     dispatch(fetchAllFilteredProducts({filterParams : filters, sortParams : sort}))
   },[dispatch, sort, filters])
 
-  console.log(productList,searchParams)
+  useEffect(()=>{
+    if(productDetails !== null)  setOpenDetailsDialog (true);
+
+  },[productDetails])
+
+
+
+  console.log(productList,searchParams,productDetails)
 
 
 
@@ -130,11 +149,12 @@ const ShoppingListing = () => {
           {
             productList && productList.length > 0 ? 
             productList.map((product)=> (
-              <ShoppingProductTile key={product?._id} product={product}/>
+              <ShoppingProductTile handleGetProductDetails={handleGetProductDetails} key={product?._id} product={product}/>
             )) : null
           }
         </div>
       </div>
+      <ProductDetailsDialog open={openDetailsDialog} setOpen={setOpenDetailsDialog} productDetails={productDetails}/>
     </div>
   )
 }
